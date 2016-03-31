@@ -1,0 +1,48 @@
+{
+    "appKeys": {
+        "AppResetOnSave": 1,
+        "AppTotalHugsNum": 0
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "Fathom Game",
+    "enableMultiJS": true,
+    "longName": "Hug Counter",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/Hugs_background.png",
+                "name": "IMAGE_HUGS_BACKGROUND",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/hug.png",
+                "menuIcon": true,
+                "name": "ICON_HUG",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "characterRegex": "[0-9]",
+                "file": "fonts/CabinSketch-Bold.ttf",
+                "name": "FONT_CABINSKETCH_BOLD_48",
+                "targetPlatforms": null,
+                "type": "font"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Hug Counter",
+    "targetPlatforms": [
+        "basalt",
+        "chalk"
+    ],
+    "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
