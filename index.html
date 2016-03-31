@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Hug Counter Configuration</title>
+		<link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  		<script src='js/slate.min.js'></script>
+  		<style>
+  			.title {
+    			padding: 15px 10px;
+    			text-transform: uppercase;
+    			font-family: 'PT Sans', sans-serif;
+    			font-size: 1.2em;
+    			font-weight: 500;
+    			color: #888888;
+    			text-align: center;
+  			}
+  		</style>
+	</head>
+	<body>
+		<h1 class='title'>Configure Hug Counter</h1>
+		
+		<div class='item-container'>
+			<div class='item-container-header'>Instructions</div>
+			<div class='item-container-content'>
+				<div class='item'>
+					<p>Welcome to Hug Counter</p><br/>
+					<p>Change the the target number of hugs using the slider, valid amounts are 10 - 9999.</p><br/>
+					<p>You may reset the number of hugs that have been counted when changing the target by checking the checkbox.</p><br/>
+					<p>To count hugs click the middle select button on the watch. To reset your count hold down the down button for two seconds.</p><br/>
+				</div>
+			</div>
+		</div>
+		<div class='item-container'>
+			<div class='item-container-header'>Settings</div>
+			<div class='item-container-content'>
+				Total Hugs
+				<label class='item'>
+					<input id='total_hugs_num_range' type="range" class="item-slider" name="slider-1" value="1000" min="10" max="9999">
+					<div class="item-input-wrapper item-slider-text">
+						<input id='total_hugs_num_input' type='text' class="item-input" name="slider-1" value='1000'>
+					</div>
+				</label>
+				<label class='item'>
+				Reset Count on Save?
+				<input id='reset_on_save_checkbox' name='reset_on_save_checkbox' class='item-checkbox' type='checkbox'>
+				</label>
+			</div>
+		</div>
+		<div class='item-container'>
+			<div class="button-container">
+				<input id='submit_button' class='item-button' type='button' value='Save' />
+			</div>
+		</div>
+			
+		<script>
+			// Handle to button html element
+			var submitButton = document.getElementById('submit_button');
+			
+			// Add a 'click' listener
+			submitButton.addEventListener('click', function() {
+				// Get config data
+				var totalHugsNum = document.getElementById('total_hugs_num_input');
+				var resetOnSave = document.getElementById('reset_on_save_checkbox');
+				var doReset = resetOnSave.checked ? 1 : 0
+				// Make a data object to be sent, coercing value types to int
+				var options = {
+					'total_hugs_num': parseInt(totalHugsNum.value),
+					'reset_on_save': parseInt(doReset)
+				};
+				
+				// Determine the correct return URL (emulator vs real watch)
+    			function getQueryParam(variable, defaultValue) {
+      				var query = location.search.substring(1);
+      				var vars = query.split('&');
+      				for (var i = 0; i < vars.length; i++) {
+        				var pair = vars[i].split('=');
+        				if (pair[0] === variable) {
+          					return decodeURIComponent(pair[1]);
+        				}
+      				}
+      				return defaultValue || false;
+    			}
+    			var return_to = getQueryParam('return_to', 'pebblejs://close#');
+    			
+    			// encode and send the data
+    			document.location = return_to + encodeURIComponent(JSON.stringify(options));
+			});
+
+			function getURLVariable(name)  {
+				name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+				var regexS = "[\\?&]"+name+"=([^&#]*)",
+					regex = new RegExp(regexS),
+					results = regex.exec(window.location.href);
+				if (results == null) return "";
+				else return results[1];
+			}
+
+			$(document).ready(function() {
+				var totalhugs = getURLVariable('totalhugs');
+				var totalHugsNum = document.getElementById('total_hugs_num_input');
+				var totalHugsNumRange = document.getElementById('total_hugs_num_range');
+				totalhugs = decodeURI(totalhugs);
+				if (totalhugs) {
+					totalHugsNum.value = totalhugs;
+					totalHugsNumRange.value = totalhugs;
+				}
+			});
+		</script>
+	</body>
+</html>
