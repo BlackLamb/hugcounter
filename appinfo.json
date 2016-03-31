@@ -7,7 +7,7 @@
     "capabilities": [
         "configurable"
     ],
-    "companyName": "Fathom Game",
+    "companyName": "Fathom",
     "enableMultiJS": true,
     "longName": "Hug Counter",
     "projectType": "native",
@@ -46,7 +46,7 @@
         "chalk"
     ],
     "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
-    "versionLabel": "1.1",
+    "versionLabel": "1.2",
     "watchapp": {
         "watchface": false
     }
