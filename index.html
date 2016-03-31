@@ -41,8 +41,12 @@
 					</div>
 				</label>
 				<label class='item'>
-				Reset Count on Save?
-				<input id='reset_on_save_checkbox' name='reset_on_save_checkbox' class='item-checkbox' type='checkbox'>
+					Reset Count on Save?
+					<input id='reset_on_save_checkbox' name='reset_on_save_checkbox' class='item-checkbox' type='checkbox'>
+				</label>
+				<label class="item">
+					Show Seconds?
+					<input id='show_seconds_checkbox' type='checkbox' class='item-toggle' name='toggle-1' checked/>
 				</label>
 			</div>
 		</div>
@@ -61,11 +65,13 @@
 				// Get config data
 				var totalHugsNum = document.getElementById('total_hugs_num_input');
 				var resetOnSave = document.getElementById('reset_on_save_checkbox');
+				var showSeconds = document.getElementById('show_seconds_checkbox');
 				var doReset = resetOnSave.checked ? 1 : 0
 				// Make a data object to be sent, coercing value types to int
 				var options = {
 					'total_hugs_num': parseInt(totalHugsNum.value),
-					'reset_on_save': parseInt(doReset)
+					'reset_on_save': resetOnSave.checked ? 1 : 0,
+					'show_seconds': showSeconds.checked ? 1 : 0
 				};
 				
 				// Determine the correct return URL (emulator vs real watch)
@@ -97,12 +103,20 @@
 
 			$(document).ready(function() {
 				var totalhugs = getURLVariable('totalhugs');
+				var showsecondsval = getURLVariable('showseconds');
 				var totalHugsNum = document.getElementById('total_hugs_num_input');
 				var totalHugsNumRange = document.getElementById('total_hugs_num_range');
+				var showSeconds = document.getElementById('show_seconds_checkbox');
+				
 				totalhugs = decodeURI(totalhugs);
 				if (totalhugs) {
 					totalHugsNum.value = totalhugs;
 					totalHugsNumRange.value = totalhugs;
+				}
+
+				showsecondsval = decodeURI(showsecondsval);
+				if (showsecondsval) {
+					showSeconds.checked = showsecondsval == 1 ? true : false;
 				}
 			});
 		</script>
