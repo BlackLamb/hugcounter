@@ -4,6 +4,7 @@
 #define VERSION_PKEY 1
 #define HUG_COUNT_PKEY 2
 #define SET_HUGS_PKEY 3
+#define SHOW_SECONDS_PKEY 4
 
 // Default Values
 #define SET_HUGS_DEFAULT 1000
@@ -11,7 +12,8 @@
 // Matching values to those in 'Settings'
 typedef enum {
 	AppTotalHugsNum = 0,
-	AppResetOnSave = 1
+	AppResetOnSave = 1,
+	AppShowSeconds = 2
 } AppKey;
 
 Window *s_main_window;
@@ -25,13 +27,24 @@ GBitmap *s_background;
 BitmapLayer *s_background_layer;
 
 int s_hug_count = 0;
-int s_set_hugs = SET_HUGS_DEFAULT;
+int s_set_hugs;
+bool s_show_seconds;
 
-static void handle_second_tick(struct tm* time_tick, TimeUnits units_changed) {
+
+static void update_time(struct tm* time_tick) {
 	static char s_time_text[] = "00:00:00";
 	
-	strftime(s_time_text, sizeof(s_time_text), clock_is_24h_style() ? "%H:%M:%S" : "%I:%M:%S", time_tick);
+	if (s_show_seconds) {
+		strftime(s_time_text, sizeof(s_time_text), clock_is_24h_style() ? "%H:%M:%S" : "%I:%M:%S", time_tick);
+	} else {
+		strftime(s_time_text, sizeof(s_time_text), clock_is_24h_style() ? "%H:%M" : "%I:%M", time_tick);
+	}
+	
 	text_layer_set_text(s_clock_layer, s_time_text);
+}
+
+static void handle_time_tick(struct tm* time_tick, TimeUnits units_changed) {
+	update_time(time_tick);
 }
 
 static void update_text() {
@@ -55,6 +68,15 @@ static void reset_hug_count_click_handler(ClickRecognizerRef recognizer, void *c
 static void click_config_provider(void *context) {
 	window_single_click_subscribe(BUTTON_ID_SELECT, increment_hug_click_handler);
 	window_long_click_subscribe(BUTTON_ID_DOWN, 2000, reset_hug_count_click_handler, NULL);
+}
+
+static void setup_time_tick() {
+	tick_timer_service_unsubscribe();
+	if (s_show_seconds) {
+		tick_timer_service_subscribe(SECOND_UNIT, handle_time_tick);
+	} else {
+		tick_timer_service_subscribe(MINUTE_UNIT, handle_time_tick);
+	}
 }
 
 static void main_window_load(Window *window) {
@@ -97,14 +119,14 @@ static void main_window_load(Window *window) {
 	// Set Default Content
 	time_t now = time(NULL);
 	struct tm *current_time = localtime(&now);
-	handle_second_tick(current_time, SECOND_UNIT);
+	handle_time_tick(current_time, SECOND_UNIT);
 	
 	text_layer_set_text(s_hugs_layer, "HUGS LEFT:");
 	
 	update_text();
 	
 	// Subscriptions
-	tick_timer_service_subscribe(SECOND_UNIT, handle_second_tick);
+	setup_time_tick();
 	
 	// Add Layers
 	layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
@@ -134,6 +156,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 		if(s_set_hugs > 9999) {
 			s_set_hugs = 9999;
 		}
+		persist_write_int(SET_HUGS_PKEY, s_set_hugs);
 		changeCount = true;
 	}
 	
@@ -146,13 +169,23 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 		}
 	}
 	
-	persist_write_int(SET_HUGS_PKEY, s_set_hugs);
+	Tuple *show_seconds_t = dict_find(iter, AppShowSeconds);
+	if(show_seconds_t) {
+		bool showSeconds = show_seconds_t->value->int32 == 1;
+		if(showSeconds != s_show_seconds) {
+			s_show_seconds = showSeconds;
+			persist_write_bool(SHOW_SECONDS_PKEY, s_show_seconds);
+			setup_time_tick();
+		}
+	}
+	
 	update_text();
 }
 
 void handle_init(void) {
 	s_hug_count = persist_exists(HUG_COUNT_PKEY) ? persist_read_int(HUG_COUNT_PKEY) : 0;
 	s_set_hugs = persist_exists(SET_HUGS_PKEY) ? persist_read_int(SET_HUGS_PKEY) : SET_HUGS_DEFAULT;
+	s_show_seconds = persist_exists(SHOW_SECONDS_PKEY) ? persist_read_bool(SHOW_SECONDS_PKEY) : true;
 	
 	s_main_window = window_create();
 	window_set_background_color(s_main_window, GColorBlack);

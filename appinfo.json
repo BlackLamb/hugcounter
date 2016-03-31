@@ -1,6 +1,7 @@
 {
     "appKeys": {
         "AppResetOnSave": 1,
+        "AppShowSeconds": 2,
         "AppTotalHugsNum": 0
     },
     "capabilities": [
