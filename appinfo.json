@@ -13,15 +13,15 @@
     "resources": {
         "media": [
             {
-                "file": "images/Hugs_background.png",
-                "name": "IMAGE_HUGS_BACKGROUND",
+                "file": "images/hug.png",
+                "menuIcon": true,
+                "name": "ICON_HUG",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/hug.png",
-                "menuIcon": true,
-                "name": "ICON_HUG",
+                "file": "images/Hugs_background.png",
+                "name": "IMAGE_HUGS_BACKGROUND",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
