@@ -29,7 +29,10 @@
                 "characterRegex": "[0-9]",
                 "file": "fonts/CabinSketch-Bold.ttf",
                 "name": "FONT_CABINSKETCH_BOLD_48",
-                "targetPlatforms": null,
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "font"
             }
         ]
@@ -37,11 +40,12 @@
     "sdkVersion": "3",
     "shortName": "Hug Counter",
     "targetPlatforms": [
+        "aplite",
         "basalt",
         "chalk"
     ],
     "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": false
     }

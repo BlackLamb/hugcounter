@@ -18,7 +18,9 @@ Window *s_main_window;
 TextLayer *s_clock_layer;
 TextLayer *s_hugs_layer;
 TextLayer *s_hugcount_layer;
+#ifdef PBL_COLOR
 GFont s_cabinsketch_bold_48;
+#endif
 GBitmap *s_background;
 BitmapLayer *s_background_layer;
 
@@ -58,7 +60,9 @@ static void click_config_provider(void *context) {
 static void main_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
+#ifdef PBL_COLOR
 	s_cabinsketch_bold_48 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
+#endif
 	s_background = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_HUGS_BACKGROUND);
 	
 	// Set up layers
@@ -79,9 +83,15 @@ static void main_window_load(Window *window) {
 	text_layer_set_text_alignment(s_hugs_layer, GTextAlignmentCenter);
 	
 	s_hugcount_layer = text_layer_create(GRect(0, 85, bounds.size.w, 50));
+#ifdef PBL_COLOR
 	text_layer_set_text_color(s_hugcount_layer, GColorRed);
-	text_layer_set_background_color(s_hugcount_layer, GColorClear);
 	text_layer_set_font(s_hugcount_layer, s_cabinsketch_bold_48);
+#else
+	text_layer_set_text_color(s_hugcount_layer, GColorWhite);
+	text_layer_set_font(s_hugcount_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS));
+#endif
+	text_layer_set_background_color(s_hugcount_layer, GColorClear);
+	
 	text_layer_set_text_alignment(s_hugcount_layer, GTextAlignmentCenter);
 	
 	// Set Default Content
@@ -108,7 +118,9 @@ static void main_window_unload(Window *window) {
 	text_layer_destroy(s_clock_layer);
 	text_layer_destroy(s_hugs_layer);
 	text_layer_destroy(s_hugcount_layer);
+#ifdef PBL_COLOR
 	fonts_unload_custom_font(s_cabinsketch_bold_48);
+#endif
 	gbitmap_destroy(s_background);
 	bitmap_layer_destroy(s_background_layer);
 }
