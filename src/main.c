@@ -9,13 +9,6 @@
 // Default Values
 #define SET_HUGS_DEFAULT 1000
 
-// Matching values to those in 'Settings'
-typedef enum {
-	AppTotalHugsNum = 0,
-	AppResetOnSave = 1,
-	AppShowSeconds = 2
-} AppKey;
-
 Window *s_main_window;
 TextLayer *s_clock_layer;
 TextLayer *s_hugs_layer;
@@ -150,7 +143,7 @@ static void main_window_unload(Window *window) {
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 	bool changeCount = false;
 	
-	Tuple *set_hugs_t = dict_find(iter, AppTotalHugsNum);
+	Tuple *set_hugs_t = dict_find(iter, MESSAGE_KEY_AppTotalHugsNum);
 	if(set_hugs_t && set_hugs_t->value->int32 != s_set_hugs) {
 		s_set_hugs = set_hugs_t->value->int32;
 		if(s_set_hugs > 9999) {
@@ -160,7 +153,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 		changeCount = true;
 	}
 	
-	Tuple *reset_on_save_t = dict_find(iter, AppResetOnSave);
+	Tuple *reset_on_save_t = dict_find(iter, MESSAGE_KEY_AppResetOnSave);
 	if(reset_on_save_t && changeCount) {
 		bool resetOnSave = reset_on_save_t->value->int32 == 1;
 		if(resetOnSave){
@@ -169,7 +162,7 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
 		}
 	}
 	
-	Tuple *show_seconds_t = dict_find(iter, AppShowSeconds);
+	Tuple *show_seconds_t = dict_find(iter, MESSAGE_KEY_AppShowSeconds);
 	if(show_seconds_t) {
 		bool showSeconds = show_seconds_t->value->int32 == 1;
 		if(showSeconds != s_show_seconds) {

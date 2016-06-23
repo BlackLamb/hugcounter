@@ -1,5 +1,5 @@
-var totalHugsNum = window.localStorage.getItem('TotalHugsNum') ? window.localStorage.getItem('TotalHugsNum') : 1000;
-var showSecondsBol = window.localStorage.getItem('ShowSeconds') ? window.localStorage.getItem('ShowSeconds') : 1;
+var totalHugsNum = localStorage.getItem('TotalHugsNum') ? localStorage.getItem('TotalHugsNum') : 1000;
+var showSecondsBol = localStorage.getItem('ShowSeconds') ? localStorage.getItem('ShowSeconds') : 1;
 
 Pebble.addEventListener('showConfiguration', function() {
 	var url = 'https://dl.dropboxusercontent.com/spa/id55snvxb28xi4a/hugcounter/index.html?totalhugs=' + totalHugsNum + '&showseconds=' + showSecondsBol;
@@ -16,9 +16,9 @@ Pebble.addEventListener('webviewclosed', function(e) {
 		'AppShowSeconds': configData.show_seconds
 	};
 	totalHugsNum = configData.total_hugs_num;
-	window.localStorage.setItem('TotalHugsNum', totalHugsNum);
+	localStorage.setItem('TotalHugsNum', totalHugsNum);
 	showSecondsBol = configData.show_seconds;
-	window.localStorage.setItem('ShowSeconds', showSecondsBol);
+	localStorage.setItem('ShowSeconds', showSecondsBol);
 	//console.log(JSON.stringify(configData));
 	
 	Pebble.sendAppMessage(dict, function() {

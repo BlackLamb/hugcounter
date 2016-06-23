@@ -1,62 +1,59 @@
 {
-  "version": "1.3.0",
-  "author": "Fathom",
-  "private": true,
-  "dependencies": {},
-  "keywords": [
-    "pebble-app"
-  ],
-  "pebble": {
-    "sdkVersion": "3",
-    "resources": {
-      "media": [
-        {
-          "type": "bitmap",
-          "menuIcon": true,
-          "targetPlatforms": null,
-          "name": "ICON_HUG",
-          "file": "images/hug.png"
+    "author": "Fathom",
+    "dependencies": {},
+    "keywords": [
+        "pebble-app"
+    ],
+    "name": "hug-counter",
+    "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "Hug Counter",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "AppTotalHugsNum",
+            "AppResetOnSave",
+            "AppShowSeconds"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/hug.png",
+                    "menuIcon": true,
+                    "name": "ICON_HUG",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/Hugs_background.png",
+                    "name": "IMAGE_HUGS_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "characterRegex": "[0-9]",
+                    "file": "fonts/CabinSketch-Bold.ttf",
+                    "name": "FONT_CABINSKETCH_BOLD_48",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk"
+                    ],
+                    "type": "font"
+                }
+            ]
         },
-        {
-          "targetPlatforms": null,
-          "type": "bitmap",
-          "name": "IMAGE_HUGS_BACKGROUND",
-          "file": "images/Hugs_background.png"
-        },
-        {
-          "type": "font",
-          "targetPlatforms": [
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
             "basalt",
             "chalk"
-          ],
-          "characterRegex": "[0-9]",
-          "name": "FONT_CABINSKETCH_BOLD_48",
-          "file": "fonts/CabinSketch-Bold.ttf"
+        ],
+        "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
+        "watchapp": {
+            "watchface": false
         }
-      ]
     },
-    "projectType": "native",
-    "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
-    "messageKeys": {
-      "AppResetOnSave": 1,
-      "AppTotalHugsNum": 0,
-      "AppShowSeconds": 2
-    },
-    "enableMultiJS": true,
-    "displayName": "Hug Counter",
-    "watchapp": {
-      "onlyShownOnCommunication": false,
-      "hiddenApp": false,
-      "watchface": false
-    },
-    "targetPlatforms": [
-      "aplite",
-      "basalt",
-      "chalk"
-    ],
-    "capabilities": [
-      "configurable"
-    ]
-  },
-  "name": "Hug Counter"
+    "version": "1.3.0"
 }
