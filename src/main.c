@@ -1,6 +1,8 @@
 #include <pebble.h>
 #include "enamel.h"
 #include <pebble-events/pebble-events.h>
+#include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
+#include <lazy-fonts/lazy-fonts.h>
 
 // Persistent Storage Keys, up the version if you change them
 #define VERSION_PKEY 2
@@ -13,12 +15,7 @@ Window *s_main_window;
 TextLayer *s_clock_layer;
 TextLayer *s_hugs_layer;
 TextLayer *s_hugcount_layer;
-#ifdef PBL_COLOR
-GFont s_cabinsketch_bold_48;
-#endif
-GBitmap *s_background;
 BitmapLayer *s_background_layer;
-
 int s_hug_count = 0;
 bool s_show_seconds;
 
@@ -42,7 +39,6 @@ static void handle_time_tick(struct tm* time_tick, TimeUnits units_changed) {
 static void update_text() {
 	static char s_hugs_left_text[5];
 	int hugs_left = enamel_get_AppTotalHugsNum() - s_hug_count < 0 ? 0 : enamel_get_AppTotalHugsNum() - s_hug_count;
-	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Hugs Math %I - %u = %u", enamel_get_AppTotalHugsNum(), s_hug_count, hugs_left);
 	snprintf(s_hugs_left_text, sizeof(s_hugs_left_text), "%u", hugs_left);
 	text_layer_set_text(s_hugcount_layer, s_hugs_left_text);
 }
@@ -74,15 +70,10 @@ static void setup_time_tick() {
 static void main_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
-#ifdef PBL_COLOR
-	s_cabinsketch_bold_48 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
-#endif
-	s_background = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_HUGS_BACKGROUND);
-	
 	// Set up layers
 	s_background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
-	bitmap_layer_set_bitmap(s_background_layer, s_background);
+	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
 	
 	s_clock_layer = text_layer_create(GRect(0, 10, bounds.size.w, 34));
 	text_layer_set_text_color(s_clock_layer, GColorWhite);
@@ -99,7 +90,7 @@ static void main_window_load(Window *window) {
 	s_hugcount_layer = text_layer_create(GRect(0, 85, bounds.size.w, 50));
 #ifdef PBL_COLOR
 	text_layer_set_text_color(s_hugcount_layer, GColorRed);
-	text_layer_set_font(s_hugcount_layer, s_cabinsketch_bold_48);
+	text_layer_set_font(s_hugcount_layer, lazy_fonts_get(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
 #else
 	text_layer_set_text_color(s_hugcount_layer, GColorWhite);
 	text_layer_set_font(s_hugcount_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS));
@@ -132,10 +123,6 @@ static void main_window_unload(Window *window) {
 	text_layer_destroy(s_clock_layer);
 	text_layer_destroy(s_hugs_layer);
 	text_layer_destroy(s_hugcount_layer);
-#ifdef PBL_COLOR
-	fonts_unload_custom_font(s_cabinsketch_bold_48);
-#endif
-	gbitmap_destroy(s_background);
 	bitmap_layer_destroy(s_background_layer);
 }
 
@@ -155,6 +142,8 @@ static void enamel_register_settings_received_cb(){
 
 void handle_init(void) {
 	enamel_init();
+	bitmaps_init();
+	lazy_fonts_init();
 	s_hug_count = persist_exists(HUG_COUNT_PKEY) ? persist_read_int(HUG_COUNT_PKEY) : 0;
 	s_show_seconds = enamel_get_AppShowSeconds();
 	
@@ -173,6 +162,8 @@ void handle_init(void) {
 void handle_deinit(void) {
 	persist_write_int(HUG_COUNT_PKEY, s_hug_count);
 	window_destroy(s_main_window);
+	lazy_fonts_deinit();
+	bitmaps_cleanup();
 	enamel_deinit();
 }
 
