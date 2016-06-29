@@ -1,6 +1,9 @@
 {
     "author": "Fathom",
-    "dependencies": {},
+    "dependencies": {
+        "enamel": "^1.0.0",
+        "pebble-clay": "^1.0.0"
+    },
     "keywords": [
         "pebble-app"
     ],

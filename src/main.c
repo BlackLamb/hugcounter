@@ -1,10 +1,10 @@
 #include <pebble.h>
+#include "enamel.h"
+#include <pebble-events/pebble-events.h>
 
 // Persistent Storage Keys, up the version if you change them
-#define VERSION_PKEY 1
+#define VERSION_PKEY 2
 #define HUG_COUNT_PKEY 2
-#define SET_HUGS_PKEY 3
-#define SHOW_SECONDS_PKEY 4
 
 // Default Values
 #define SET_HUGS_DEFAULT 1000
@@ -20,7 +20,6 @@ GBitmap *s_background;
 BitmapLayer *s_background_layer;
 
 int s_hug_count = 0;
-int s_set_hugs;
 bool s_show_seconds;
 
 
@@ -42,8 +41,8 @@ static void handle_time_tick(struct tm* time_tick, TimeUnits units_changed) {
 
 static void update_text() {
 	static char s_hugs_left_text[5];
-	int hugs_left = s_set_hugs - s_hug_count < 0 ? 0 : s_set_hugs - s_hug_count;
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Hugs Math %u - %u = %u", s_set_hugs, s_hug_count, hugs_left);
+	int hugs_left = enamel_get_AppTotalHugsNum() - s_hug_count < 0 ? 0 : enamel_get_AppTotalHugsNum() - s_hug_count;
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Hugs Math %I - %u = %u", enamel_get_AppTotalHugsNum(), s_hug_count, hugs_left);
 	snprintf(s_hugs_left_text, sizeof(s_hugs_left_text), "%u", hugs_left);
 	text_layer_set_text(s_hugcount_layer, s_hugs_left_text);
 }
@@ -140,45 +139,24 @@ static void main_window_unload(Window *window) {
 	bitmap_layer_destroy(s_background_layer);
 }
 
-static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-	bool changeCount = false;
-	
-	Tuple *set_hugs_t = dict_find(iter, MESSAGE_KEY_AppTotalHugsNum);
-	if(set_hugs_t && set_hugs_t->value->int32 != s_set_hugs) {
-		s_set_hugs = set_hugs_t->value->int32;
-		if(s_set_hugs > 9999) {
-			s_set_hugs = 9999;
-		}
-		persist_write_int(SET_HUGS_PKEY, s_set_hugs);
-		changeCount = true;
+static void enamel_register_settings_received_cb(){	
+	if (enamel_get_AppResetOnSave()) {
+		s_hug_count = 0;
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Resetting Count");
 	}
 	
-	Tuple *reset_on_save_t = dict_find(iter, MESSAGE_KEY_AppResetOnSave);
-	if(reset_on_save_t && changeCount) {
-		bool resetOnSave = reset_on_save_t->value->int32 == 1;
-		if(resetOnSave){
-			s_hug_count = 0;
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "Resetting Count");
-		}
-	}
-	
-	Tuple *show_seconds_t = dict_find(iter, MESSAGE_KEY_AppShowSeconds);
-	if(show_seconds_t) {
-		bool showSeconds = show_seconds_t->value->int32 == 1;
-		if(showSeconds != s_show_seconds) {
-			s_show_seconds = showSeconds;
-			persist_write_bool(SHOW_SECONDS_PKEY, s_show_seconds);
-			setup_time_tick();
-		}
+	if (enamel_get_AppShowSeconds() != s_show_seconds) {
+		s_show_seconds = enamel_get_AppShowSeconds();
+		setup_time_tick();
 	}
 	
 	update_text();
 }
 
 void handle_init(void) {
+	enamel_init();
 	s_hug_count = persist_exists(HUG_COUNT_PKEY) ? persist_read_int(HUG_COUNT_PKEY) : 0;
-	s_set_hugs = persist_exists(SET_HUGS_PKEY) ? persist_read_int(SET_HUGS_PKEY) : SET_HUGS_DEFAULT;
-	s_show_seconds = persist_exists(SHOW_SECONDS_PKEY) ? persist_read_bool(SHOW_SECONDS_PKEY) : true;
+	s_show_seconds = enamel_get_AppShowSeconds();
 	
 	s_main_window = window_create();
 	window_set_background_color(s_main_window, GColorBlack);
@@ -188,14 +166,14 @@ void handle_init(void) {
 		.unload = main_window_unload,
 	});
 	window_stack_push(s_main_window, true);
-	app_message_register_inbox_received(inbox_received_handler);
-	app_message_open(255,255);
+	enamel_register_settings_received(enamel_register_settings_received_cb);
+	events_app_message_open(); 
 }
 
 void handle_deinit(void) {
 	persist_write_int(HUG_COUNT_PKEY, s_hug_count);
-	app_message_deregister_callbacks();
 	window_destroy(s_main_window);
+	enamel_deinit();
 }
 
 int main(void) {
