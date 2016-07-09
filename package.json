@@ -19,7 +19,8 @@
         "messageKeys": [
             "AppTotalHugsNum",
             "AppResetOnSave",
-            "AppShowSeconds"
+            "AppShowSeconds",
+            "AppBackground"
         ],
         "projectType": "native",
         "resources": {

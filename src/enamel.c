@@ -26,7 +26,8 @@ static bool s_config_changed;
 // Getter for 'AppTotalHugsNum'
 int32_t enamel_get_AppTotalHugsNum(){
 	Tuple* tuple = dict_find(&s_dict, 3479005501);
-	return tuple ? tuple->value->int32 : 10000;
+		
+	return tuple ? tuple->value->int32 : 1000;
 }
 // -----------------------------------------------------
 
@@ -46,12 +47,21 @@ bool enamel_get_AppShowSeconds(){
 }
 // -----------------------------------------------------
 
+// -----------------------------------------------------
+// Getter for 'AppBackground'
+const char* enamel_get_AppBackground(){
+	Tuple* tuple = dict_find(&s_dict, 1211776784);
+	return tuple ? tuple->value->cstring : "IMAGE_HUGS_BACKGROUND";
+}
+// -----------------------------------------------------
+
 
 static uint16_t prv_get_inbound_size() {
 	return 1
 		+ 7 + 4
 		+ 7 + 4
 		+ 7 + 4
+		+ 7 + 22
 ;
 }
 
@@ -59,6 +69,7 @@ static uint32_t prv_map_messagekey(const uint32_t key){
 	if( key == MESSAGE_KEY_AppTotalHugsNum) return 3479005501;
 	if( key == MESSAGE_KEY_AppResetOnSave) return 1833537796;
 	if( key == MESSAGE_KEY_AppShowSeconds) return 2606092567;
+	if( key == MESSAGE_KEY_AppBackground) return 1211776784;
 	return 0;
 }
 
@@ -97,7 +108,8 @@ static uint16_t prv_save_generic_data(uint32_t startkey, const void *data, uint1
 	uint16_t total_w_bytes = 0;
 	uint16_t w_bytes = 0;
 	while(offset < size){
-		w_bytes = persist_write_data(startkey + offset / PERSIST_DATA_MAX_LENGTH, data + offset, PERSIST_DATA_MAX_LENGTH);
+		w_bytes = size - offset < PERSIST_DATA_MAX_LENGTH ? size - offset : PERSIST_DATA_MAX_LENGTH;
+		w_bytes = persist_write_data(startkey + offset / PERSIST_DATA_MAX_LENGTH, data + offset, w_bytes);
 		total_w_bytes += w_bytes;
 		offset += PERSIST_DATA_MAX_LENGTH;
 	}
