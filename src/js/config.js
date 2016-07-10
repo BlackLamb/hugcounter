@@ -57,16 +57,12 @@ module.exports = [
 						"value": "IMAGE_HUGS_BACKGROUND"
 					},
 					{
-						"label": "Image 2",
-						"value": "IMAGE_BACKGROUND_2"
+						"label": "Heart",
+						"value": "IMAGE_HEART_BACKGROUND"
 					},
 					{
-						"label": "Image 3",
-						"value": "IMAGE_BACKGROUND_3"
-					},
-					{
-						"label": "Image 4",
-						"value": "IMAGE_BACKGROUND_4"
+						"label": "Hands",
+						"value": "IMAGE_HANDS_BACKGROUND"
 					}
 				]
 			}
