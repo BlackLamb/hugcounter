@@ -67,13 +67,23 @@ static void setup_time_tick() {
 	}
 }
 
+static void set_background_image() {
+	if (strcmp(enamel_get_AppBackground(), "IMAGE_HEART_BACKGROUND") == 0)
+		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HEART_BACKGROUND, 1));
+	else if (strcmp(enamel_get_AppBackground(), "IMAGE_HANDS_BACKGROUND") == 0)
+		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HANDS_BACKGROUND, 1));
+	else
+		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HUGS_BACKGROUND, 1));
+}
+
 static void main_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
 	// Set up layers
 	s_background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
-	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
+	set_background_image();
+	//bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
 	
 	s_clock_layer = text_layer_create(GRect(0, 10, bounds.size.w, 34));
 	text_layer_set_text_color(s_clock_layer, GColorWhite);
@@ -136,6 +146,8 @@ static void enamel_register_settings_received_cb(){
 		s_show_seconds = enamel_get_AppShowSeconds();
 		setup_time_tick();
 	}
+	
+	set_background_image();
 	
 	update_text();
 }

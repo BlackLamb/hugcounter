@@ -2,7 +2,7 @@ module.exports = [
 	{
 		"type":"heading",
 		"defaultValue":"Configure Hug Counter",
-		"size":1
+		"size":2
 	},
 	{
 		"type":"section",
@@ -44,6 +44,27 @@ module.exports = [
 				"messageKey":"AppShowSeconds",
 				"label":"Show Seconds?",
 				"defaultValue":true
+			},
+			{
+				"type": "select",
+				"messageKey": "AppBackground",
+				"label": "Background",
+				"description": "Select Background Image",
+				"defaultValue": "IMAGE_HUGS_BACKGROUND",
+				"options" : [
+					{
+						"label": "Hugs",
+						"value": "IMAGE_HUGS_BACKGROUND"
+					},
+					{
+						"label": "Heart",
+						"value": "IMAGE_HEART_BACKGROUND"
+					},
+					{
+						"label": "Hands",
+						"value": "IMAGE_HANDS_BACKGROUND"
+					}
+				]
 			}
 		]
 	},

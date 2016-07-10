@@ -19,24 +19,27 @@
         "messageKeys": [
             "AppTotalHugsNum",
             "AppResetOnSave",
-            "AppShowSeconds"
+            "AppShowSeconds",
+            "AppBackground"
         ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
-                    "characterRegex": "[0-9]",
-                    "file": "fonts/CabinSketch-Bold.ttf",
-                    "name": "FONT_CABINSKETCH_BOLD_48",
-                    "targetPlatforms": [
-                        "basalt",
-                        "chalk"
-                    ],
-                    "type": "font"
+                    "file": "images/Image_Hands.png",
+                    "name": "IMAGE_HANDS_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
                 },
                 {
-                    "file": "images/Hugs_background.png",
+                    "file": "images/Image_Hugs.png",
                     "name": "IMAGE_HUGS_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/Image_Heart.png",
+                    "name": "IMAGE_HEART_BACKGROUND",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -46,6 +49,16 @@
                     "name": "ICON_HUG",
                     "targetPlatforms": null,
                     "type": "bitmap"
+                },
+                {
+                    "characterRegex": "[0-9]",
+                    "file": "fonts/CabinSketch-Bold.ttf",
+                    "name": "FONT_CABINSKETCH_BOLD_48",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk"
+                    ],
+                    "type": "font"
                 }
             ]
         },

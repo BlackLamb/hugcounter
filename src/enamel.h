@@ -23,6 +23,11 @@ bool enamel_get_AppResetOnSave();
 bool enamel_get_AppShowSeconds();
 // -----------------------------------------------------
 
+// -----------------------------------------------------
+// Getter for 'AppBackground'
+const char* enamel_get_AppBackground();
+// -----------------------------------------------------
+
 void enamel_init();
 
 void enamel_deinit();
