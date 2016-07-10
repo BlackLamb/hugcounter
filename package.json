@@ -1,7 +1,9 @@
 {
     "author": "Fathom",
     "dependencies": {
+        "@smallstoneapps/bitmap-loader": "^1.0.0",
         "enamel": "^1.0.0",
+        "lazy-fonts": "^1.0.0",
         "pebble-clay": "^1.0.0"
     },
     "keywords": [
@@ -17,21 +19,34 @@
         "messageKeys": [
             "AppTotalHugsNum",
             "AppResetOnSave",
-            "AppShowSeconds"
+            "AppShowSeconds",
+            "AppBackground"
         ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
-                    "file": "images/hug.png",
-                    "menuIcon": true,
-                    "name": "ICON_HUG",
+                    "file": "images/Image_Hands.png",
+                    "name": "IMAGE_HANDS_BACKGROUND",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/Hugs_background.png",
+                    "file": "images/Image_Hugs.png",
                     "name": "IMAGE_HUGS_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/Image_Heart.png",
+                    "name": "IMAGE_HEART_BACKGROUND",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/hug.png",
+                    "menuIcon": true,
+                    "name": "ICON_HUG",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -58,5 +73,5 @@
             "watchface": false
         }
     },
-    "version": "1.3.0"
+    "version": "1.4.0"
 }
