@@ -19,6 +19,12 @@ BitmapLayer *s_background_layer;
 int s_hug_count = 0;
 bool s_show_seconds;
 
+uint8_t backgrounds = [
+	RESOURCE_ID_IMAGE_HUGS_BACKGROUND,  //0
+	RESOURCE_ID_IMAGE_HEART_BACKGROUND, //1
+	RESOURCE_ID_IMAGE_HANDS_BACKGROUND  //2
+];
+
 
 static void update_time(struct tm* time_tick) {
 	static char s_time_text[] = "00:00:00";
@@ -68,12 +74,7 @@ static void setup_time_tick() {
 }
 
 static void set_background_image() {
-	if (strcmp(enamel_get_AppBackground(), "IMAGE_HEART_BACKGROUND") == 0)
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HEART_BACKGROUND, 1));
-	else if (strcmp(enamel_get_AppBackground(), "IMAGE_HANDS_BACKGROUND") == 0)
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HANDS_BACKGROUND, 1));
-	else
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HUGS_BACKGROUND, 1));
+	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(backgrounds[atio(enamel_get_AppBackgroundV2())], 1));
 }
 
 static void main_window_load(Window *window) {

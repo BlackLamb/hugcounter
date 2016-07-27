@@ -20,7 +20,7 @@
             "AppTotalHugsNum",
             "AppResetOnSave",
             "AppShowSeconds",
-            "AppBackground"
+            "AppBackgroundV2"
         ],
         "projectType": "native",
         "resources": {

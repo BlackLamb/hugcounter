@@ -49,7 +49,7 @@ bool enamel_get_AppShowSeconds(){
 
 // -----------------------------------------------------
 // Getter for 'AppBackground'
-const char* enamel_get_AppBackground(){
+const char* enamel_get_AppBackgroundV2(){
 	Tuple* tuple = dict_find(&s_dict, 1211776784);
 	return tuple ? tuple->value->cstring : "IMAGE_HUGS_BACKGROUND";
 }
