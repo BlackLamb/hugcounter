@@ -24,8 +24,8 @@ bool enamel_get_AppShowSeconds();
 // -----------------------------------------------------
 
 // -----------------------------------------------------
-// Getter for 'AppBackground'
-const char* enamel_get_AppBackground();
+// Getter for 'AppBackgroundV2'
+const char* enamel_get_AppBackgroundV2();
 // -----------------------------------------------------
 
 void enamel_init();

@@ -48,10 +48,10 @@ bool enamel_get_AppShowSeconds(){
 // -----------------------------------------------------
 
 // -----------------------------------------------------
-// Getter for 'AppBackground'
+// Getter for 'AppBackgroundV2'
 const char* enamel_get_AppBackgroundV2(){
-	Tuple* tuple = dict_find(&s_dict, 1211776784);
-	return tuple ? tuple->value->cstring : "IMAGE_HUGS_BACKGROUND";
+	Tuple* tuple = dict_find(&s_dict, 2204200638);
+	return tuple ? tuple->value->cstring : "0";
 }
 // -----------------------------------------------------
 
@@ -61,7 +61,7 @@ static uint16_t prv_get_inbound_size() {
 		+ 7 + 4
 		+ 7 + 4
 		+ 7 + 4
-		+ 7 + 22
+		+ 7 + 2
 ;
 }
 
@@ -69,7 +69,7 @@ static uint32_t prv_map_messagekey(const uint32_t key){
 	if( key == MESSAGE_KEY_AppTotalHugsNum) return 3479005501;
 	if( key == MESSAGE_KEY_AppResetOnSave) return 1833537796;
 	if( key == MESSAGE_KEY_AppShowSeconds) return 2606092567;
-	if( key == MESSAGE_KEY_AppBackground) return 1211776784;
+	if( key == MESSAGE_KEY_AppBackgroundV2) return 2204200638;
 	return 0;
 }
 
