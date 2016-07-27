@@ -26,8 +26,9 @@
         "resources": {
             "media": [
                 {
-                    "file": "images/Image_Hands.png",
-                    "name": "IMAGE_HANDS_BACKGROUND",
+                    "file": "images/hug.png",
+                    "menuIcon": true,
+                    "name": "ICON_HUG",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
@@ -44,9 +45,8 @@
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/hug.png",
-                    "menuIcon": true,
-                    "name": "ICON_HUG",
+                    "file": "images/Image_Hands.png",
+                    "name": "IMAGE_HANDS_BACKGROUND",
                     "targetPlatforms": null,
                     "type": "bitmap"
                 },
