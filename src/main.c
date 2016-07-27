@@ -2,7 +2,7 @@
 #include "enamel.h"
 #include <pebble-events/pebble-events.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
-#include <lazy-fonts/lazy-fonts.h>
+#include <@smallstoneapps/font-loader/font-loader.h>
 
 // Persistent Storage Keys, up the version if you change them
 #define VERSION_PKEY 2
@@ -100,7 +100,7 @@ static void main_window_load(Window *window) {
 	s_hugcount_layer = text_layer_create(GRect(0, 85, bounds.size.w, 50));
 #ifdef PBL_COLOR
 	text_layer_set_text_color(s_hugcount_layer, GColorRed);
-	text_layer_set_font(s_hugcount_layer, lazy_fonts_get(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
+	text_layer_set_font(s_hugcount_layer, fonts_get_font(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
 #else
 	text_layer_set_text_color(s_hugcount_layer, GColorWhite);
 	text_layer_set_font(s_hugcount_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS));
@@ -155,7 +155,7 @@ static void enamel_register_settings_received_cb(){
 void handle_init(void) {
 	enamel_init();
 	bitmaps_init();
-	lazy_fonts_init();
+	fonts_init();
 	s_hug_count = persist_exists(HUG_COUNT_PKEY) ? persist_read_int(HUG_COUNT_PKEY) : 0;
 	s_show_seconds = enamel_get_AppShowSeconds();
 	
@@ -174,7 +174,7 @@ void handle_init(void) {
 void handle_deinit(void) {
 	persist_write_int(HUG_COUNT_PKEY, s_hug_count);
 	window_destroy(s_main_window);
-	lazy_fonts_deinit();
+	fonts_cleanup();
 	bitmaps_cleanup();
 	enamel_deinit();
 }
