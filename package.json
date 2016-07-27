@@ -2,8 +2,8 @@
     "author": "Fathom",
     "dependencies": {
         "@smallstoneapps/bitmap-loader": "^1.0.0",
+        "@smallstoneapps/font-loader": "^1.1.0",
         "enamel": "^1.0.0",
-        "lazy-fonts": "^1.0.0",
         "pebble-clay": "^1.0.0"
     },
     "keywords": [
