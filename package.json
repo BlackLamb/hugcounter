@@ -30,7 +30,7 @@
           "menuIcon": true,
           "name": "ICON_HUG",
           "targetPlatforms": null,
-          "type": "bitmap"
+          "type": "png"
         },
         {
           "file": "images/Image_Hugs.png",

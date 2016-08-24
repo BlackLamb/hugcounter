@@ -11,13 +11,16 @@
 // Default Values
 #define SET_HUGS_DEFAULT 1000
 
-Window *s_main_window;
-TextLayer *s_clock_layer;
-TextLayer *s_hugs_layer;
-TextLayer *s_hugcount_layer;
-BitmapLayer *s_background_layer;
-int s_hug_count = 0;
-bool s_show_seconds;
+static Window *s_main_window;
+static Layer *s_window_layer;
+static TextLayer *s_clock_layer;
+static TextLayer *s_hugs_layer;
+static TextLayer *s_hugcount_layer;
+static BitmapLayer *s_background_layer;
+static int s_hug_count = 0;
+static bool s_show_seconds;
+static const uint8_t s_offset_top_percent = 24;
+static const uint8_t s_offset_bottom_percent = 51;
 
 static void update_time(struct tm* time_tick) {
 	static char s_time_text[] = "00:00:00";
@@ -76,28 +79,70 @@ static void set_background_image() {
 	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(backgrounds[atoi(enamel_get_AppBackgroundV2())], 1));
 }
 
+static void prv_unobstructed_will_change(GRect final_unobstructed_screen_area, void *context) {
+	// Get the full size of the screen
+	GRect full_bounds = layer_get_bounds(s_window_layer);
+	if (!grect_equal(&full_bounds, &final_unobstructed_screen_area)) {
+		// Screen is about to become obstructed, hide the date
+	layer_set_hidden(text_layer_get_layer(s_clock_layer), true);
+	}
+}
+
+static void prv_unobstructed_did_change(void *context) {
+	// Get the full size of the screen
+	GRect full_bounds = layer_get_bounds(s_window_layer);
+	// Get the total available screen real-estate
+	GRect bounds = layer_get_unobstructed_bounds(s_window_layer);
+	if (grect_equal(&full_bounds, &bounds)) {
+		// Screen is no longer obstructed, show the date
+		layer_set_hidden(text_layer_get_layer(s_clock_layer), false);
+	}
+}
+
+uint8_t relative_pixel(int16_t percent, int16_t max) {
+	return (max * percent) / 100;
+}
+
+static void prv_unobstructed_change(AnimationProgress progress, void *context) {
+	// Get the total available screen real-estate
+	GRect bounds = layer_get_unobstructed_bounds(s_window_layer);
+	// Get the current position of our top text layer
+	GRect frame = layer_get_frame(text_layer_get_layer(s_hugs_layer));
+	// Shift the Y coordinate
+	frame.origin.y = relative_pixel(s_offset_top_percent, bounds.size.h);
+	// Apply the new location
+	layer_set_frame(text_layer_get_layer(s_hugs_layer), frame);
+	// Get the current position of our bottom text layer
+	GRect frame2 = layer_get_frame(text_layer_get_layer(s_hugcount_layer));
+	// Shift the Y coordinate
+	frame2.origin.y = relative_pixel(s_offset_bottom_percent, bounds.size.h);
+	// Apply the new position
+	layer_set_frame(text_layer_get_layer(s_hugcount_layer), frame2);
+}
+
 static void main_window_load(Window *window) {
-	Layer *window_layer = window_get_root_layer(window);
-	GRect bounds = layer_get_frame(window_layer);
+	s_window_layer = window_get_root_layer(window);
+	GRect bounds = layer_get_bounds(s_window_layer);
+	GRect unob_bounds = layer_get_unobstructed_bounds(s_window_layer);
 	// Set up layers
 	s_background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
 	set_background_image();
 	//bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
 	
-	s_clock_layer = text_layer_create(GRect(0, 10, bounds.size.w, 34));
+	s_clock_layer = text_layer_create(GRect(0, relative_pixel(6, unob_bounds.size.h), unob_bounds.size.w, 34));
 	text_layer_set_text_color(s_clock_layer, GColorWhite);
 	text_layer_set_background_color(s_clock_layer, GColorClear);
 	text_layer_set_font(s_clock_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_alignment(s_clock_layer, GTextAlignmentCenter);
 	
-	s_hugs_layer = text_layer_create(GRect(0, 40, bounds.size.w, 34));
+	s_hugs_layer = text_layer_create(GRect(0, relative_pixel(s_offset_top_percent, unob_bounds.size.h), unob_bounds.size.w, 34));
 	text_layer_set_text_color(s_hugs_layer, GColorWhite);
 	text_layer_set_background_color(s_hugs_layer, GColorClear);
 	text_layer_set_font(s_hugs_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_alignment(s_hugs_layer, GTextAlignmentCenter);
 	
-	s_hugcount_layer = text_layer_create(GRect(0, 85, bounds.size.w, 50));
+	s_hugcount_layer = text_layer_create(GRect(0, relative_pixel(s_offset_bottom_percent, unob_bounds.size.h), unob_bounds.size.w, 50));
 #ifdef PBL_COLOR
 	text_layer_set_text_color(s_hugcount_layer, GColorRed);
 	text_layer_set_font(s_hugcount_layer, fonts_get_font(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
@@ -122,10 +167,18 @@ static void main_window_load(Window *window) {
 	setup_time_tick();
 	
 	// Add Layers
-	layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
-	layer_add_child(window_layer, text_layer_get_layer(s_clock_layer));
-	layer_add_child(window_layer, text_layer_get_layer(s_hugs_layer));
-	layer_add_child(window_layer, text_layer_get_layer(s_hugcount_layer));
+	layer_add_child(s_window_layer, bitmap_layer_get_layer(s_background_layer));
+	layer_add_child(s_window_layer, text_layer_get_layer(s_clock_layer));
+	layer_add_child(s_window_layer, text_layer_get_layer(s_hugs_layer));
+	layer_add_child(s_window_layer, text_layer_get_layer(s_hugcount_layer));
+	
+	// UnobstructedArea Stuff
+	UnobstructedAreaHandlers handlers = {
+		.will_change = prv_unobstructed_will_change,
+    	.did_change = prv_unobstructed_did_change,
+    	.change = prv_unobstructed_change
+  	};
+  	unobstructed_area_service_subscribe(handlers, NULL);
 }
 
 static void main_window_unload(Window *window) {
@@ -134,6 +187,7 @@ static void main_window_unload(Window *window) {
 	text_layer_destroy(s_hugs_layer);
 	text_layer_destroy(s_hugcount_layer);
 	bitmap_layer_destroy(s_background_layer);
+	layer_destroy(s_window_layer);
 }
 
 static void enamel_register_settings_received_cb(){	
