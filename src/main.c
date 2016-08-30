@@ -79,45 +79,8 @@ static void set_background_image() {
 	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(backgrounds[atoi(enamel_get_AppBackgroundV2())], 1));
 }
 
-static void prv_unobstructed_will_change(GRect final_unobstructed_screen_area, void *context) {
-	// Get the full size of the screen
-	GRect full_bounds = layer_get_bounds(s_window_layer);
-	if (!grect_equal(&full_bounds, &final_unobstructed_screen_area)) {
-		// Screen is about to become obstructed, hide the date
-	layer_set_hidden(text_layer_get_layer(s_clock_layer), true);
-	}
-}
-
-static void prv_unobstructed_did_change(void *context) {
-	// Get the full size of the screen
-	GRect full_bounds = layer_get_bounds(s_window_layer);
-	// Get the total available screen real-estate
-	GRect bounds = layer_get_unobstructed_bounds(s_window_layer);
-	if (grect_equal(&full_bounds, &bounds)) {
-		// Screen is no longer obstructed, show the date
-		layer_set_hidden(text_layer_get_layer(s_clock_layer), false);
-	}
-}
-
 uint8_t relative_pixel(int16_t percent, int16_t max) {
 	return (max * percent) / 100;
-}
-
-static void prv_unobstructed_change(AnimationProgress progress, void *context) {
-	// Get the total available screen real-estate
-	GRect bounds = layer_get_unobstructed_bounds(s_window_layer);
-	// Get the current position of our top text layer
-	GRect frame = layer_get_frame(text_layer_get_layer(s_hugs_layer));
-	// Shift the Y coordinate
-	frame.origin.y = relative_pixel(s_offset_top_percent, bounds.size.h);
-	// Apply the new location
-	layer_set_frame(text_layer_get_layer(s_hugs_layer), frame);
-	// Get the current position of our bottom text layer
-	GRect frame2 = layer_get_frame(text_layer_get_layer(s_hugcount_layer));
-	// Shift the Y coordinate
-	frame2.origin.y = relative_pixel(s_offset_bottom_percent, bounds.size.h);
-	// Apply the new position
-	layer_set_frame(text_layer_get_layer(s_hugcount_layer), frame2);
 }
 
 static void main_window_load(Window *window) {
@@ -171,14 +134,6 @@ static void main_window_load(Window *window) {
 	layer_add_child(s_window_layer, text_layer_get_layer(s_clock_layer));
 	layer_add_child(s_window_layer, text_layer_get_layer(s_hugs_layer));
 	layer_add_child(s_window_layer, text_layer_get_layer(s_hugcount_layer));
-	
-	// UnobstructedArea Stuff
-	UnobstructedAreaHandlers handlers = {
-		.will_change = prv_unobstructed_will_change,
-    	.did_change = prv_unobstructed_did_change,
-    	.change = prv_unobstructed_change
-  	};
-  	unobstructed_area_service_subscribe(handlers, NULL);
 }
 
 static void main_window_unload(Window *window) {
