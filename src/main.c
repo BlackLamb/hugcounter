@@ -12,7 +12,6 @@
 #define SET_HUGS_DEFAULT 1000
 
 static Window *s_main_window;
-static Layer *s_window_layer;
 static TextLayer *s_clock_layer;
 static TextLayer *s_hugs_layer;
 static TextLayer *s_hugcount_layer;
@@ -21,6 +20,7 @@ static int s_hug_count = 0;
 static bool s_show_seconds;
 static const uint8_t s_offset_top_percent = 24;
 static const uint8_t s_offset_bottom_percent = 51;
+static EventHandle s_settings_recived_handle;
 
 static void update_time(struct tm* time_tick) {
 	static char s_time_text[] = "00:00:00";
@@ -84,14 +84,12 @@ uint8_t relative_pixel(int16_t percent, int16_t max) {
 }
 
 static void main_window_load(Window *window) {
-	s_window_layer = window_get_root_layer(window);
-	GRect bounds = layer_get_bounds(s_window_layer);
-	GRect unob_bounds = layer_get_unobstructed_bounds(s_window_layer);
-	// Set up layers
+	Layer *window_layer = window_get_root_layer(window);
+	GRect bounds = layer_get_bounds(window_layer);
+	GRect unob_bounds = layer_get_unobstructed_bounds(window_layer);
 	s_background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
 	set_background_image();
-	//bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
 	
 	s_clock_layer = text_layer_create(GRect(0, relative_pixel(6, unob_bounds.size.h), unob_bounds.size.w, 34));
 	text_layer_set_text_color(s_clock_layer, GColorWhite);
@@ -130,10 +128,10 @@ static void main_window_load(Window *window) {
 	setup_time_tick();
 	
 	// Add Layers
-	layer_add_child(s_window_layer, bitmap_layer_get_layer(s_background_layer));
-	layer_add_child(s_window_layer, text_layer_get_layer(s_clock_layer));
-	layer_add_child(s_window_layer, text_layer_get_layer(s_hugs_layer));
-	layer_add_child(s_window_layer, text_layer_get_layer(s_hugcount_layer));
+	layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
+	layer_add_child(window_layer, text_layer_get_layer(s_clock_layer));
+	layer_add_child(window_layer, text_layer_get_layer(s_hugs_layer));
+	layer_add_child(window_layer, text_layer_get_layer(s_hugcount_layer));
 }
 
 static void main_window_unload(Window *window) {
@@ -142,10 +140,9 @@ static void main_window_unload(Window *window) {
 	text_layer_destroy(s_hugs_layer);
 	text_layer_destroy(s_hugcount_layer);
 	bitmap_layer_destroy(s_background_layer);
-	layer_destroy(s_window_layer);
 }
 
-static void enamel_register_settings_received_cb(){	
+static void enamel_settings_received_handler(void *context){	
 	if (enamel_get_AppResetOnSave()) {
 		s_hug_count = 0;
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Resetting Count");
@@ -176,7 +173,7 @@ void handle_init(void) {
 		.unload = main_window_unload,
 	});
 	window_stack_push(s_main_window, true);
-	enamel_register_settings_received(enamel_register_settings_received_cb);
+	s_settings_recived_handle = enamel_settings_received_subscribe(enamel_settings_received_handler, NULL);
 	events_app_message_open(); 
 }
 
@@ -185,6 +182,7 @@ void handle_deinit(void) {
 	window_destroy(s_main_window);
 	fonts_cleanup();
 	bitmaps_cleanup();
+	enamel_settings_received_unsubscribe(s_settings_recived_handle);
 	enamel_deinit();
 }
 
