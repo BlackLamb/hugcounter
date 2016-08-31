@@ -2,7 +2,7 @@
 #include "enamel.h"
 #include <pebble-events/pebble-events.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
-#include <lazy-fonts/lazy-fonts.h>
+#include <@smallstoneapps/font-loader/font-loader.h>
 
 // Persistent Storage Keys, up the version if you change them
 #define VERSION_PKEY 2
@@ -11,14 +11,16 @@
 // Default Values
 #define SET_HUGS_DEFAULT 1000
 
-Window *s_main_window;
-TextLayer *s_clock_layer;
-TextLayer *s_hugs_layer;
-TextLayer *s_hugcount_layer;
-BitmapLayer *s_background_layer;
-int s_hug_count = 0;
-bool s_show_seconds;
-
+static Window *s_main_window;
+static TextLayer *s_clock_layer;
+static TextLayer *s_hugs_layer;
+static TextLayer *s_hugcount_layer;
+static BitmapLayer *s_background_layer;
+static int s_hug_count = 0;
+static bool s_show_seconds;
+static const uint8_t s_offset_top_percent = 24;
+static const uint8_t s_offset_bottom_percent = 51;
+static EventHandle s_settings_recived_handle;
 
 static void update_time(struct tm* time_tick) {
 	static char s_time_text[] = "00:00:00";
@@ -68,39 +70,43 @@ static void setup_time_tick() {
 }
 
 static void set_background_image() {
-	if (strcmp(enamel_get_AppBackground(), "IMAGE_HEART_BACKGROUND") == 0)
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HEART_BACKGROUND, 1));
-	else if (strcmp(enamel_get_AppBackground(), "IMAGE_HANDS_BACKGROUND") == 0)
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HANDS_BACKGROUND, 1));
-	else
-		bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(RESOURCE_ID_IMAGE_HUGS_BACKGROUND, 1));
+	uint8_t backgrounds[] = {
+		RESOURCE_ID_IMAGE_HUGS_BACKGROUND,  //0
+		RESOURCE_ID_IMAGE_HEART_BACKGROUND, //1
+		RESOURCE_ID_IMAGE_HANDS_BACKGROUND  //2
+	};
+	
+	bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap_in_group(backgrounds[atoi(enamel_get_AppBackgroundV2())], 1));
+}
+
+uint8_t relative_pixel(int16_t percent, int16_t max) {
+	return (max * percent) / 100;
 }
 
 static void main_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
-	GRect bounds = layer_get_frame(window_layer);
-	// Set up layers
+	GRect bounds = layer_get_bounds(window_layer);
+	GRect unob_bounds = layer_get_unobstructed_bounds(window_layer);
 	s_background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_compositing_mode(s_background_layer, GCompOpSet);
 	set_background_image();
-	//bitmap_layer_set_bitmap(s_background_layer, bitmaps_get_bitmap(RESOURCE_ID_IMAGE_HUGS_BACKGROUND));
 	
-	s_clock_layer = text_layer_create(GRect(0, 10, bounds.size.w, 34));
+	s_clock_layer = text_layer_create(GRect(0, relative_pixel(6, unob_bounds.size.h), unob_bounds.size.w, 34));
 	text_layer_set_text_color(s_clock_layer, GColorWhite);
 	text_layer_set_background_color(s_clock_layer, GColorClear);
 	text_layer_set_font(s_clock_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_alignment(s_clock_layer, GTextAlignmentCenter);
 	
-	s_hugs_layer = text_layer_create(GRect(0, 40, bounds.size.w, 34));
+	s_hugs_layer = text_layer_create(GRect(0, relative_pixel(s_offset_top_percent, unob_bounds.size.h), unob_bounds.size.w, 34));
 	text_layer_set_text_color(s_hugs_layer, GColorWhite);
 	text_layer_set_background_color(s_hugs_layer, GColorClear);
 	text_layer_set_font(s_hugs_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
 	text_layer_set_text_alignment(s_hugs_layer, GTextAlignmentCenter);
 	
-	s_hugcount_layer = text_layer_create(GRect(0, 85, bounds.size.w, 50));
+	s_hugcount_layer = text_layer_create(GRect(0, relative_pixel(s_offset_bottom_percent, unob_bounds.size.h), unob_bounds.size.w, 50));
 #ifdef PBL_COLOR
 	text_layer_set_text_color(s_hugcount_layer, GColorRed);
-	text_layer_set_font(s_hugcount_layer, lazy_fonts_get(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
+	text_layer_set_font(s_hugcount_layer, fonts_get_font(RESOURCE_ID_FONT_CABINSKETCH_BOLD_48));
 #else
 	text_layer_set_text_color(s_hugcount_layer, GColorWhite);
 	text_layer_set_font(s_hugcount_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS));
@@ -136,7 +142,7 @@ static void main_window_unload(Window *window) {
 	bitmap_layer_destroy(s_background_layer);
 }
 
-static void enamel_register_settings_received_cb(){	
+static void enamel_settings_received_handler(void *context){	
 	if (enamel_get_AppResetOnSave()) {
 		s_hug_count = 0;
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Resetting Count");
@@ -155,7 +161,7 @@ static void enamel_register_settings_received_cb(){
 void handle_init(void) {
 	enamel_init();
 	bitmaps_init();
-	lazy_fonts_init();
+	fonts_init();
 	s_hug_count = persist_exists(HUG_COUNT_PKEY) ? persist_read_int(HUG_COUNT_PKEY) : 0;
 	s_show_seconds = enamel_get_AppShowSeconds();
 	
@@ -167,15 +173,16 @@ void handle_init(void) {
 		.unload = main_window_unload,
 	});
 	window_stack_push(s_main_window, true);
-	enamel_register_settings_received(enamel_register_settings_received_cb);
+	s_settings_recived_handle = enamel_settings_received_subscribe(enamel_settings_received_handler, NULL);
 	events_app_message_open(); 
 }
 
 void handle_deinit(void) {
 	persist_write_int(HUG_COUNT_PKEY, s_hug_count);
 	window_destroy(s_main_window);
-	lazy_fonts_deinit();
+	fonts_cleanup();
 	bitmaps_cleanup();
+	enamel_settings_received_unsubscribe(s_settings_recived_handle);
 	enamel_deinit();
 }
 

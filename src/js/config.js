@@ -47,22 +47,22 @@ module.exports = [
 			},
 			{
 				"type": "select",
-				"messageKey": "AppBackground",
+				"messageKey": "AppBackgroundV2",
 				"label": "Background",
 				"description": "Select Background Image",
-				"defaultValue": "IMAGE_HUGS_BACKGROUND",
+				"defaultValue": "0",
 				"options" : [
 					{
 						"label": "Hugs",
-						"value": "IMAGE_HUGS_BACKGROUND"
+						"value": "0"
 					},
 					{
 						"label": "Heart",
-						"value": "IMAGE_HEART_BACKGROUND"
+						"value": "1"
 					},
 					{
 						"label": "Hands",
-						"value": "IMAGE_HANDS_BACKGROUND"
+						"value": "2"
 					}
 				]
 			}

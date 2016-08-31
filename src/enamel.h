@@ -24,16 +24,18 @@ bool enamel_get_AppShowSeconds();
 // -----------------------------------------------------
 
 // -----------------------------------------------------
-// Getter for 'AppBackground'
-const char* enamel_get_AppBackground();
+// Getter for 'AppBackgroundV2'
+const char* enamel_get_AppBackgroundV2();
 // -----------------------------------------------------
 
 void enamel_init();
 
 void enamel_deinit();
 
-typedef void(EnamelSettingsReceivedCallback)(void);
+typedef void* EventHandle;
+typedef void(EnamelSettingsReceivedHandler)(void* context);
 
-void enamel_register_settings_received(EnamelSettingsReceivedCallback *callback);
+EventHandle enamel_settings_received_subscribe(EnamelSettingsReceivedHandler *handler, void *context);
+void enamel_settings_received_unsubscribe(EventHandle handle);
 
 #endif

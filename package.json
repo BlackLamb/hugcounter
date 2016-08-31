@@ -1,77 +1,78 @@
 {
-    "author": "Fathom",
-    "dependencies": {
-        "@smallstoneapps/bitmap-loader": "^1.0.0",
-        "enamel": "^1.0.0",
-        "lazy-fonts": "^1.0.0",
-        "pebble-clay": "^1.0.0"
-    },
-    "keywords": [
-        "pebble-app"
+  "author": "Fathom",
+  "dependencies": {
+    "@smallstoneapps/bitmap-loader": "^1.0.0",
+    "@smallstoneapps/font-loader": "^1.1.0",
+    "enamel": "^1.0.0",
+    "pebble-clay": "^1.0.0"
+  },
+  "keywords": [
+    "pebble-app"
+  ],
+  "name": "hug-counter",
+  "pebble": {
+    "capabilities": [
+      "configurable"
     ],
-    "name": "hug-counter",
-    "pebble": {
-        "capabilities": [
-            "configurable"
-        ],
-        "displayName": "Hug Counter",
-        "enableMultiJS": true,
-        "messageKeys": [
-            "AppTotalHugsNum",
-            "AppResetOnSave",
-            "AppShowSeconds",
-            "AppBackground"
-        ],
-        "projectType": "native",
-        "resources": {
-            "media": [
-                {
-                    "file": "images/Image_Hands.png",
-                    "name": "IMAGE_HANDS_BACKGROUND",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Image_Hugs.png",
-                    "name": "IMAGE_HUGS_BACKGROUND",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/Image_Heart.png",
-                    "name": "IMAGE_HEART_BACKGROUND",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "file": "images/hug.png",
-                    "menuIcon": true,
-                    "name": "ICON_HUG",
-                    "targetPlatforms": null,
-                    "type": "bitmap"
-                },
-                {
-                    "characterRegex": "[0-9]",
-                    "file": "fonts/CabinSketch-Bold.ttf",
-                    "name": "FONT_CABINSKETCH_BOLD_48",
-                    "targetPlatforms": [
-                        "basalt",
-                        "chalk"
-                    ],
-                    "type": "font"
-                }
-            ]
+    "displayName": "Hug Counter",
+    "enableMultiJS": true,
+    "messageKeys": [
+      "AppTotalHugsNum",
+      "AppResetOnSave",
+      "AppShowSeconds",
+      "AppBackgroundV2"
+    ],
+    "projectType": "native",
+    "resources": {
+      "media": [
+        {
+          "file": "images/hug.png",
+          "menuIcon": true,
+          "name": "ICON_HUG",
+          "targetPlatforms": null,
+          "type": "png"
         },
-        "sdkVersion": "3",
-        "targetPlatforms": [
-            "aplite",
+        {
+          "file": "images/Image_Hugs.png",
+          "name": "IMAGE_HUGS_BACKGROUND",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Image_Heart.png",
+          "name": "IMAGE_HEART_BACKGROUND",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "file": "images/Image_Hands.png",
+          "name": "IMAGE_HANDS_BACKGROUND",
+          "targetPlatforms": null,
+          "type": "bitmap"
+        },
+        {
+          "characterRegex": "[0-9]",
+          "file": "fonts/CabinSketch-Bold.ttf",
+          "name": "FONT_CABINSKETCH_BOLD_48",
+          "targetPlatforms": [
             "basalt",
             "chalk"
-        ],
-        "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
-        "watchapp": {
-            "watchface": false
+          ],
+          "type": "font"
         }
+      ]
     },
-    "version": "1.4.0"
+    "sdkVersion": "3",
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite"
+    ],
+    "uuid": "3f305bec-e6c0-4009-9010-1e7c9ec7c1ce",
+    "watchapp": {
+      "watchface": false
+    }
+  },
+  "version": "2.0.0"
 }
